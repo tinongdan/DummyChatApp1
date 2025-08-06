@@ -28,6 +28,7 @@ import com.example.dummychatapp1.ui.theme.MainColor
 fun ChatInputField(
     message: String,
     onMessageChange: (String) -> Unit,
+    onImageClick: () -> Unit,
     onSendClick: () -> Unit,
 ) {
     Row(modifier = Modifier
@@ -36,6 +37,15 @@ fun ChatInputField(
         .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = onImageClick) {
+            Icon(
+                painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                contentDescription = "Attach Image",
+                tint = MainColor,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+
         OutlinedTextField(
             value = message,
             onValueChange = onMessageChange,

@@ -1,5 +1,8 @@
 package com.example.dummychatapp1.screens.chat
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -8,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -17,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +52,28 @@ fun ChatScreen (
     modifier: Modifier = Modifier
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val currentUserId = "user_001";
+    val listState = rememberLazyListState()
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.sendImageMessage(it)
+        }
+    }
+
+    LaunchedEffect(state.messages.size) {
+        if (state.messages.isNotEmpty()) {
+            kotlinx.coroutines.delay(100) //Chờ load ảnh trước khi focus
+            listState.animateScrollToItem(state.messages.lastIndex)
+        }
+    }
+
+
+//    LaunchedEffect(Unit) {
+//        viewModel.observeMessages(id)
+//    }
+
+    val currentUserId = "user_001"
 
     Scaffold(
         topBar = {
@@ -100,6 +126,9 @@ fun ChatScreen (
                 onMessageChange = {
                     viewModel.setMessage(it)
                 },
+                onImageClick = {
+                    imagePickerLauncher.launch("image/*")
+                },
                 onSendClick = {
                     viewModel.sendMessage(id)
                 }
@@ -109,7 +138,8 @@ fun ChatScreen (
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(it),
+            state = listState
         ) {
             items(state.messages) { model: Message ->
                 VerticalSpace()

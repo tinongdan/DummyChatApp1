@@ -1,14 +1,18 @@
 package com.example.dummychatapp1.screens.chat
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.example.dummychatapp1.model.Message
 import com.example.dummychatapp1.model.UserMessage
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class ChatState(
     val currentMessage: String = "",
+    val currentImageUrl: String = "",
     val messages: List<Message> = emptyList(),
 )
 
@@ -17,6 +21,19 @@ class ChatViewModel(): ViewModel(){
     val state = _state.asStateFlow()
 
     private val sampleMessages = listOf(
+        Message(
+            roomId = "room_001",
+            messageId = "msg_001",
+            senderId = "user_001",
+            content = "",
+            mediaUrl = "https://img.freepik.com/free-photo/fuji-mountain-kawaguchiko-lake-morning-autumn-seasons-fuji-mountain-yamanachi-japan_335224-102.jpg?semt=ais_hybrid&w=740&q=80",
+            sendAt = System.currentTimeMillis() - 300000,
+            isRead = true,
+            userInfo = UserMessage(
+                userId = "user_001",
+                avatarUrl = "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001877.png"
+            )
+        ),
         Message(
             roomId = "room_001",
             messageId = "msg_001",
@@ -88,6 +105,8 @@ class ChatViewModel(): ViewModel(){
         _state.update {
             it.copy(messages = sampleMessages)
         }
+
+        //observeMessages("room1")
     }
 
     fun setMessage(message: String) {
@@ -123,6 +142,61 @@ class ChatViewModel(): ViewModel(){
             }
         }
     }
+
+    fun SendMessageFirebase(roomId: String, message: Message) {
+        val db = Firebase.firestore
+        val messageId = "msg_${System.currentTimeMillis()}"
+
+        db.collection("chats")
+            .document(roomId)
+            .collection("messages")
+            .document(messageId)
+            .set(message)
+
+    }
+
+    fun sendImageMessage(imageUri: Uri) {
+        val newMessage = Message(
+            roomId = "room_001",
+            messageId = "msg_${System.currentTimeMillis()}",
+            senderId = "user_001",
+            content = "",
+            mediaUrl = imageUri.toString(),
+            sendAt = System.currentTimeMillis(),
+            isRead = false,
+            userInfo = UserMessage(
+                userId = "user_001",
+                avatarUrl = "https://example.com/avatar.png"
+            )
+        )
+
+        _state.update {
+            it.copy(
+                messages = it.messages + newMessage
+            )
+        }
+    }
+
+    fun observeMessages(roomId: String) {
+        val db = Firebase.firestore
+
+        db.collection("chats")
+            .document(roomId)
+            .collection("messages")
+            .orderBy("sendAt")
+            .addSnapshotListener { snapshot, e ->
+                if (e != null || snapshot == null) return@addSnapshotListener
+
+                val messages = snapshot.documents.mapNotNull {
+                    it.toObject(Message::class.java)
+                }
+
+                _state.update {
+                    it.copy(messages = messages)
+                }
+            }
+    }
+
 
     fun fetchMessage(
         currentUserId: String,

@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import com.example.dummychatapp1.model.Message
 import com.example.dummychatapp1.ui.theme.BgColor
+import com.example.dummychatapp1.ui.theme.OwnerChatColor
 import com.example.dummychatapp1.utils.components.VerticalSpace
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -44,7 +45,7 @@ fun ChatMessageItem(
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (isCurrentUser) Color(0xFFDCF8C6) else BgColor,
+                        color = if (isCurrentUser) OwnerChatColor else BgColor,
                         shape = RoundedCornerShape(
                             topStart = 16.dp,
                             topEnd = 16.dp,
@@ -55,19 +56,32 @@ fun ChatMessageItem(
                     .padding(12.dp)
                     .widthIn(max = 280.dp)
             ) {
-                Column {
-                    Text(
-                        text = model.content,
-                        color = Color.Black,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = formatTimestamp(model.sendAt),
-                        fontSize = 11.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.align(Alignment.End)
-                    )
+                if (model.mediaUrl.isNotBlank()) {
+                    Column {
+                        ChatImage(imageUrl = model.mediaUrl)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = formatTimestamp(model.sendAt),
+                            fontSize = 11.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+                    }
+                } else {
+                    Column {
+                        Text(
+                            text = model.content,
+                            color = Color.Black,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = formatTimestamp(model.sendAt),
+                            fontSize = 11.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+                    }
                 }
             }
         }
