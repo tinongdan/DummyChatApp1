@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "140760592797",
+    "project_id": "dummychatapp-ec601",
+    "storage_bucket": "dummychatapp-ec601.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140760592797:android:fe834322a8b9c01c85ff74",
+        "android_client_info": {
+          "package_name": "com.example.dummychatapp1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQMO1XoC7rEPmP0860C5YfDpEgfSRETgM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
