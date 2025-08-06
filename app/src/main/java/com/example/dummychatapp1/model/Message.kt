@@ -7,5 +7,6 @@ data class Message(
     val content: String = "",
     val mediaUrl: String = "",
     val sendAt: Long = System.currentTimeMillis(),
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    val userInfo: UserMessage
 )

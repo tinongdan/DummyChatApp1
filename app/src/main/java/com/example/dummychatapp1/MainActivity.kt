@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
                     ChatScreen(
                         id = "CS001",
                         name = "Phuc",
+                        avatarUrl = "https://t4.ftcdn.net/jpg/02/79/66/93/360_F_279669366_Lk12QalYQKMczLEa4ySjhaLtx1M2u7e6.jpg",
                         viewModel = ChatViewModel(),
                         popBackStack = {},
                         modifier = Modifier.fillMaxSize().padding(innerPadding)
